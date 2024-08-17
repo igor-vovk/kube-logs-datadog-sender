@@ -1,0 +1,27 @@
+image:
+  repository: timberio/vector
+  tag: latest-alpine
+
+# Name of the secret containing Datadog credentials.
+# It should contain:
+# * DD_API_KEY – (required) API key for your Datadog account
+# * DD_SITE – (optional) Datadog site to send logs to (e.g., datadoghq.com, datadoghq.eu)
+datadogSecretName: datadog-secret
+
+sender:
+  exclude:
+    # List of services to exclude from sending. Leave empty to send all services.
+    services:
+      - argocd-application-controller
+      - argocd-applicationset-controller
+      - argocd-notifications-controller
+      - argocd-image-updater
+      - argocd-repo-server
+      - argocd-server
+      - vector-logs-sender
+      - vector-logs-aggregator
+
+    # List of log levels to exclude from sending. Leave empty to send all log levels.
+    logLevels:
+      - TRACE
+      - DEBUG
