@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  kube-logs-datadog-sender:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-08-17T20:11:56.357583105Z"
+    description: Sends logs to Datadog
+    digest: 3046681b82e123c9e3964f17993cb04643a19d5140cff3323ea13c053f8e7f90
+    name: kube-logs-datadog-sender
+    type: application
+    urls:
+    - https://github.com/igor-vovk/kube-logs-datadog-sender/releases/download/kube-logs-datadog-sender-0.1.0/kube-logs-datadog-sender-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-08-17T20:11:56.357623291Z"
