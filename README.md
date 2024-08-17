@@ -14,7 +14,20 @@ It is based on Axiom's [instruction](https://axiom.co/docs/send-data/kubernetes)
 * Lightweight and fast.
 * Supports excluding logs from log collection by service name and log level.
 
-## Setting up
+## Installation
+1. Create kubernetes secret with Datadog API key:
+   ```shell
+   kubectl create secret generic datadog-api-key --from-literal=DD_API_KEY=<YOUR_DATADOG_API_KEY>
+    ```
+2. Add the Helm repository:
+   ```shell
+   helm repo add kube-logs-datadog-sender https://raw.githubusercontent.com/igor-vovk/kube-logs-datadog-sender/main/helm
+   ```
+3. Install the chart:
+   ```shell
+   helm install kube-logs-datadog-sender kube-logs-datadog-sender/kube-logs-datadog-sender
+   ```
+
 
 ## Architecture
 
