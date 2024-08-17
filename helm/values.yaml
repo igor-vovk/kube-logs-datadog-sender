@@ -10,7 +10,7 @@ datadogSecretName: datadog-secret
 
 sender:
   exclude:
-    # List of services to exclude from sending. Leave empty to send all services.
+    # List of services to exclude from sending. Leave empty to send logs from all services.
     services:
       - argocd-application-controller
       - argocd-applicationset-controller
@@ -21,7 +21,7 @@ sender:
       - vector-logs-sender
       - vector-logs-aggregator
 
-    # List of log levels to exclude from sending. Leave empty to send all log levels.
+    # List of log levels to exclude from sending. Leave empty to disable filtering by log level.
     logLevels:
       - TRACE
       - DEBUG
