@@ -15,19 +15,45 @@ It is based on Axiom's [instruction](https://axiom.co/docs/send-data/kubernetes)
 * Supports excluding logs from log collection by service name and log level.
 
 ## Installation
+
+### Helm
 1. Create kubernetes secret with Datadog API key:
    ```shell
    kubectl create secret generic datadog-api-key --from-literal=DD_API_KEY=<YOUR_DATADOG_API_KEY>
     ```
 2. Add the Helm repository:
    ```shell
-   helm repo add kube-logs-datadog-sender https://raw.githubusercontent.com/igor-vovk/kube-logs-datadog-sender/main/helm
+   helm repo add kube-logs-datadog-sender https://igor-vovk.github.io/kube-logs-datadog-sender/
    ```
 3. Install the chart:
    ```shell
    helm install kube-logs-datadog-sender kube-logs-datadog-sender/kube-logs-datadog-sender
    ```
 
+### ArgoCD Application
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-logs-datadog-sender
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: kube-logs-datadog-sender
+    repoURL: https://igor-vovk.github.io/kube-logs-datadog-sender/
+    targetRevision: 0.1.0
+    helm:
+      valuesObject:
+        # configuration of a sender, see chart's values.yaml for all available options
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
 
 ## Architecture
 
@@ -42,6 +68,7 @@ Sender-Aggregator pattern is used to send logs to Datadog:
 ## Points of Improvement
 
 * Consider having thin senders and doing parsing and filtering in the aggregator instance.
+* More flexible Vector configuring from Helm chart.
 
 ## Referral Links
 
