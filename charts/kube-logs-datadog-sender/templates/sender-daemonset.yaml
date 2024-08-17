@@ -1,0 +1,80 @@
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+
+metadata:
+  name: vector-logs-sender
+  namespace: kube-system
+
+spec:
+  selector:
+    matchLabels:
+      name: vector-logs-sender
+  template:
+    metadata:
+      labels:
+        name: vector-logs-sender
+    spec:
+      serviceAccountName: vector
+      containers:
+        - name: vector-logs-sender
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          args: [ "--config-dir", "/etc/vector/", "--require-healthy", "true" ]
+          ports:
+            - containerPort: 8686
+          env:
+            - name: VECTOR_SELF_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - mountPath: /etc/vector
+              name: config
+            - name: data-dir
+              mountPath: /var/lib/vector
+            - name: var-log
+              mountPath: /var/log
+              readOnly: true
+            - name: var-lib
+              mountPath: /var/lib
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8686
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "500Mi"
+          securityContext:
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      volumes:
+        - name: config
+          configMap:
+            name: vector-logs-sender-config
+        - name: data-dir
+          hostPath:
+            path: /var/lib/vector
+            type: DirectoryOrCreate
+        - name: var-log
+          hostPath:
+            path: /var/log
+        - name: var-lib
+          hostPath:
+            path: /var/lib
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: { }
+      terminationGracePeriodSeconds: 30
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
