@@ -26,7 +26,7 @@ spec:
             - containerPort: 8685
           envFrom:
             - secretRef:
-                name: {{ .Values.datadogSecretName | default "datadog-creds" }}
+                name: {{ .Values.datadog.secretName | default "datadog-creds" }}
           volumeMounts:
             - mountPath: /etc/vector
               name: config

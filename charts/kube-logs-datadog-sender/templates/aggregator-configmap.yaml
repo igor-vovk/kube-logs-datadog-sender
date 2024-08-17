@@ -29,5 +29,5 @@ data:
       datadog:
         type: datadog_logs
         inputs: [ final_transform ]
-        site: datadoghq.eu
+        site: {{ .Values.datadog.site }}
 

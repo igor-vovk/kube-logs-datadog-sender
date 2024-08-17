@@ -5,8 +5,9 @@ image:
 # Name of the secret containing Datadog credentials.
 # It should contain:
 # * DD_API_KEY – (required) API key for your Datadog account
-# * DD_SITE – (optional) Datadog site to send logs to (e.g., datadoghq.com, datadoghq.eu)
-datadogSecretName: datadog-secret
+datadog:
+  secretName: datadog-secret
+  site: datadoghq.com
 
 sender:
   exclude:
