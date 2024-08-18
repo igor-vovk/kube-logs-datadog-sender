@@ -2,27 +2,40 @@ image:
   repository: timberio/vector
   tag: latest-alpine
 
+targetNamespace: kube-system
+
 # Name of the secret containing Datadog credentials.
 # It should contain:
-# * DD_API_KEY – (required) API key for your Datadog account
+# * DD_API_KEY – (required) API key from your Datadog account
 datadog:
-  secretName: datadog-secret
+  secretName: datadog-creds
   site: datadoghq.com
 
-sender:
-  exclude:
-    # List of services to exclude from sending. Leave empty to send logs from all services.
-    services:
-      - argocd-application-controller
-      - argocd-applicationset-controller
-      - argocd-notifications-controller
-      - argocd-image-updater
-      - argocd-repo-server
-      - argocd-server
-      - vector-logs-sender
-      - vector-logs-aggregator
+vector:
+  api:
+    port: 8686
 
-    # List of log levels to exclude from sending. Leave empty to disable filtering by log level.
-    logLevels:
-      - TRACE
-      - DEBUG
+  sender:
+    exclude:
+      # List of services to exclude from sending. Leave empty to send logs from all services.
+      services:
+        - argocd-application-controller
+        - argocd-applicationset-controller
+        - argocd-notifications-controller
+        - argocd-image-updater
+        - argocd-repo-server
+        - argocd-server
+        - vector-logs-sender
+        - vector-logs-aggregator
+
+      # List of log levels to exclude from sending. Leave empty to disable filtering by log level.
+      logLevels:
+        - TRACE
+        - DEBUG
+
+  aggregator:
+    service:
+      name: vector-logs-aggregator
+
+    source:
+      port: 8685

@@ -17,10 +17,12 @@ It is based on Axiom's [instruction](https://axiom.co/docs/send-data/kubernetes)
 ## Installation
 
 ### Helm
-1. Create kubernetes secret with Datadog API key:
+
+1. Create Kubernetes secret with Datadog API key:
    ```shell
-   kubectl create secret generic datadog-api-key --from-literal=DD_API_KEY=<YOUR_DATADOG_API_KEY>
+   kubectl create secret generic datadog-creds --from-literal=DD_API_KEY=<YOUR_DATADOG_API_KEY>
     ```
+   (make sure to create it in the `kube-system` namespace as the chart is deployed there)
 2. Add the Helm repository:
    ```shell
    helm repo add kube-logs-datadog-sender https://igor-vovk.github.io/kube-logs-datadog-sender/
@@ -31,6 +33,7 @@ It is based on Axiom's [instruction](https://axiom.co/docs/send-data/kubernetes)
    ```
 
 ### ArgoCD Application
+Example of ArgoCD Application manifest:
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -42,10 +45,10 @@ spec:
   source:
     chart: kube-logs-datadog-sender
     repoURL: https://igor-vovk.github.io/kube-logs-datadog-sender/
-    targetRevision: 0.1.0
+    targetRevision: 0.1.2
     helm:
       valuesObject:
-        # configuration of a sender, see chart's values.yaml for all available options
+      # configuration of a sender, see chart's values.yaml for all available options
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
@@ -68,11 +71,12 @@ Sender-Aggregator pattern is used to send logs to Datadog:
 ## Points of Improvement
 
 * Consider having thin senders and doing parsing and filtering in the aggregator instance.
-* More flexible Vector configuring from Helm chart.
+* Right now parsing is most optimized for the Logback logs format. Figure out how to make it more generic.
+* More flexible Vector configuration from Helm chart.
 
 ## Referral Links
 
-They help me to pay for the Datadog, so I can see my logs.
+Help me to pay my Datadog bills by following those links:
 
 * [Hetzner Cloud](https://hetzner.cloud/?ref=iAnthJAtoQ8d) – best cloud provider with the cheapest prices in the EU
 * [Bybit](https://www.bybit.nl/invite?ref=EVWANAG) – best crypto exchange

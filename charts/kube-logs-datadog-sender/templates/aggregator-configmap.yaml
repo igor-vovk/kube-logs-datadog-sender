@@ -5,18 +5,18 @@ kind: ConfigMap
 
 metadata:
   name: vector-logs-aggregator-config
-  namespace: kube-system
+  namespace: {{ .Values.targetNamespace }}
 
 data:
   vector.yaml: |
     api:
       enabled: true
-      address: 0.0.0.0:8686
+      address: "0.0.0.0:{{ .Values.vector.api.port }}"
 
     sources:
       vector:
         type: vector
-        address: 0.0.0.0:8685
+        address: "0.0.0.0:{{ .Values.vector.aggregator.source.port }}"
 
     transforms:
       final_transform:

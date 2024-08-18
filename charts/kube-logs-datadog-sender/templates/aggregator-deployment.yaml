@@ -5,7 +5,7 @@ kind: Deployment
 
 metadata:
   name: vector-logs-aggregator
-  namespace: kube-system
+  namespace: {{ .Values.targetNamespace }}
 
 spec:
   selector:
@@ -22,18 +22,19 @@ spec:
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           args: [ "--config-dir", "/etc/vector/" ]
           ports:
-            - containerPort: 8686
-            - containerPort: 8685
+            - containerPort: {{ .Values.vector.api.port }}
+            - containerPort: {{ .Values.vector.aggregator.source.port }}
           envFrom:
             - secretRef:
-                name: {{ .Values.datadog.secretName | default "datadog-creds" }}
+                name: {{ .Values.datadog.secretName }}
           volumeMounts:
             - mountPath: /etc/vector
               name: config
           livenessProbe:
             httpGet:
+              # Rely on Vector's health endpoint to determine if the container is healthy.
               path: /health
-              port: 8686
+              port: {{ .Values.vector.api.port }}
             initialDelaySeconds: 3
             periodSeconds: 3
           resources:
@@ -57,12 +58,12 @@ apiVersion: v1
 kind: Service
 
 metadata:
-  name: vector-logs-aggregator
+  name: {{ .Values.vector.aggregator.service.name }}
 
 spec:
   selector:
     name: vector-logs-aggregator
   ports:
     - name: source
-      port: 8685
-      targetPort: 8685
+      port: {{ .Values.vector.aggregator.source.port }}
+      targetPort: {{ .Values.vector.aggregator.source.port }}

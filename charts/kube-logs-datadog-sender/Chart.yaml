@@ -1,7 +1,7 @@
 apiVersion: v2
 name: kube-logs-datadog-sender
-description: Sends logs to Datadog
+description: Kubernetes -> Datadog logs sender
 
 type: application
-version: 0.1.1
-appVersion: 0.1.1
+version: 0.1.2
+appVersion: 0.1.2

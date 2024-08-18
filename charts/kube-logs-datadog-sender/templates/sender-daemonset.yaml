@@ -5,7 +5,7 @@ kind: DaemonSet
 
 metadata:
   name: vector-logs-sender
-  namespace: kube-system
+  namespace: {{ .Values.targetNamespace }}
 
 spec:
   selector:
@@ -22,7 +22,7 @@ spec:
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           args: [ "--config-dir", "/etc/vector/", "--require-healthy", "true" ]
           ports:
-            - containerPort: 8686
+            - containerPort: {{ .Values.vector.api.port }}
           env:
             - name: VECTOR_SELF_NODE_NAME
               valueFrom:
@@ -41,8 +41,9 @@ spec:
               readOnly: true
           livenessProbe:
             httpGet:
+              # Rely on Vector's health endpoint to determine if the container is healthy.
               path: /health
-              port: 8686
+              port: {{ .Values.vector.api.port }}
             initialDelaySeconds: 3
             periodSeconds: 3
           resources:

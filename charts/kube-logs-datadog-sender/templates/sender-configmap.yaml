@@ -5,13 +5,13 @@ kind: ConfigMap
 
 metadata:
   name: vector-logs-sender-config
-  namespace: kube-system
+  namespace: {{ .Values.targetNamespace }}
 
 data:
   vector.yaml: |
     api:
       enabled: true
-      address: 0.0.0.0:8686
+      address: "0.0.0.0:{{ .Values.vector.api.port }}"
 
     sources:
       logs:
@@ -19,11 +19,7 @@ data:
         self_node_name: ${VECTOR_SELF_NODE_NAME}
 
     transforms:
-      sample_logs:
-        type: sample
-        inputs: [ logs ]
-        rate: 500
-      parse_json:
+      parse_logs:
         type: remap
         inputs: [ logs ]
         source: |
@@ -46,11 +42,11 @@ data:
           del(.stream)
       exclude_log_levels:
         type: filter
-        inputs: [ parse_json ]
+        inputs: [ parse_logs ]
         condition: |
           !includes(
             [
-              {{- range .Values.sender.exclude.logLevels }}
+              {{- range .Values.vector.sender.exclude.logLevels }}
                 "{{ . }}",
               {{- end }}
             ],
@@ -63,7 +59,7 @@ data:
         condition: |
           !includes(
             [
-              {{- range .Values.sender.exclude.services }}
+              {{- range .Values.vector.sender.exclude.services }}
                 "{{ . }}",
               {{- end }}
             ],
@@ -80,9 +76,5 @@ data:
       vector_aggregator:
         type: vector
         inputs: [ final_transform ]
-        address: vector-logs-aggregator.kube-system.svc.cluster.local:8685
-      #console:
-      #  type: console
-      #  inputs: [ final_transform ]
-      #  encoding:
-      #    codec: json
+        address: "{{ .Values.vector.aggregator.service.name }}.{{ .Values.targetNamespace }}.svc.cluster.local:{{ .Values.vector.aggregator.source.port }}"
+

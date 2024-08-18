@@ -4,7 +4,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: vector
-  namespace: kube-system
+  namespace: {{ .Values.targetNamespace }}
 
 ---
 
@@ -32,7 +32,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: vector
-    namespace: kube-system
+    namespace: {{ .Values.targetNamespace }}
 roleRef:
   kind: ClusterRole
   name: vector
